@@ -1,0 +1,150 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+file_path = "D:\GDP and Productivity of Indian Cities\Economy_Productivity_SD_India_Final (1).csv"
+data = pd.read_csv(file_path)
+
+data.info()
+print("Missing Values:\n", data.isnull().sum())
+
+
+print(f"Number of duplicate rows: {data.duplicated().sum()}")
+
+
+for col in data.columns:
+    if data[col].isnull().any():
+        if data[col].dtype == 'object':
+
+            data[col].fillna(data[col].mode()[0], inplace=True)
+        else:
+
+            data[col].fillna(data[col].mean(), inplace=True)
+
+
+data.describe()
+
+data.shape
+
+data.head()
+
+data.tail()
+
+data.columns
+
+data['City'] = data['City'].str.title()
+data['City']
+
+for col in data.select_dtypes(include=['float64', 'int64']).columns:
+    Q1 = data[col].quantile(0.25)
+    Q3 = data[col].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    data[col] = np.clip(data[col], lower_bound, upper_bound)
+
+for col in data.select_dtypes(include=['float64', 'int64']).columns:
+    plt.figure(figsize=(5, 2))
+    plt.boxplot(
+        data[col],
+        vert=False,
+        patch_artist=True,
+        boxprops=dict(facecolor='lightblue', color='blue'),
+        whiskerprops=dict(color='blue'),
+        capprops=dict(color='blue'),
+        flierprops=dict(markerfacecolor='red', marker='o', color='blue'),
+        medianprops=dict(color='darkorange')
+    )
+    plt.title(f'{col} After Handling Outliers', fontsize=12)
+    plt.xlabel('Value', fontsize=10)
+    plt.tight_layout()
+    plt.show()
+
+data.describe()
+
+data['GDP (in billion inr)'] = data['GDP (in billion $)'] * 84
+data['GDP (in billion inr)']
+
+data['GDP (in billion inr)'].isnull().sum()
+
+data['GDP (in billion inr)']
+
+data.columns
+
+city = data[data['City'] == 'Bengaluru']
+
+sectors = ['SME Employment (%)', 'Tourism Sector Employment (%)',
+           'ICT Sector Employment (%)', 'Agriculture (%)']
+
+yearly_data = city.groupby('Year')[sectors].sum()
+
+yearly_data.plot(kind='bar', stacked=True)
+plt.title('Sector-wise Employment Distribution in Bengaluru Over Years')
+plt.xlabel('Year')
+plt.ylabel('Percentage of Employment')
+plt.legend(title='Sectors')
+plt.xticks(rotation=45)
+plt.show()
+
+
+cities = data['City'].unique()[:6]
+city_gdp = data[data['City'].isin(cities)]
+city_avg_gdp = city_gdp.groupby('City')['GDP (in billion inr)'].mean()
+city_avg_gdp.plot.pie(autopct='%1.1f%%', startangle=140)
+plt.title('GDP Distribution for First 6 Cities')
+plt.show()
+
+cleaned_file_path = "Cleaned_GDP_Productivity_Indian_Cities.csv"
+data.to_csv(cleaned_file_path, index=False)
+<>:4: SyntaxWarning: invalid escape sequence '\G'
+<>:4: SyntaxWarning: invalid escape sequence '\G'
+C:\Users\aadhi\AppData\Local\Temp\ipykernel_32092\305862465.py:4: SyntaxWarning: invalid escape sequence '\G'
+  file_path = "D:\GDP and Productivity of Indian Cities\Economy_Productivity_SD_India_Final (1).csv"
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 164 entries, 0 to 163
+Data columns (total 8 columns):
+ #   Column                         Non-Null Count  Dtype  
+---  ------                         --------------  -----  
+ 0   City                           150 non-null    object 
+ 1   Year                           150 non-null    float64
+ 2   Youth Unemployment Rate (%)    150 non-null    float64
+ 3   SME Employment (%)             155 non-null    float64
+ 4   Tourism Sector Employment (%)  155 non-null    float64
+ 5   ICT Sector Employment (%)      155 non-null    float64
+ 6   GDP (in billion $)             150 non-null    float64
+ 7   Agriculture (%)                161 non-null    float64
+dtypes: float64(7), object(1)
+memory usage: 10.4+ KB
+Missing Values:
+ City                             14
+Year                             14
+Youth Unemployment Rate (%)      14
+SME Employment (%)                9
+Tourism Sector Employment (%)     9
+ICT Sector Employment (%)         9
+GDP (in billion $)               14
+Agriculture (%)                   3
+dtype: int64
+Number of duplicate rows: 2
+C:\Users\aadhi\AppData\Local\Temp\ipykernel_32092\305862465.py:20: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  data[col].fillna(data[col].mode()[0], inplace=True)
+C:\Users\aadhi\AppData\Local\Temp\ipykernel_32092\305862465.py:23: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  data[col].fillna(data[col].mean(), inplace=True)
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
+No description has been provided for this image
